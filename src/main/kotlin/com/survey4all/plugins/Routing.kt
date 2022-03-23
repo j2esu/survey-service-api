@@ -21,7 +21,6 @@ fun Application.configureRouting() {
             exception<AuthorizationException> { call, cause ->
                 call.respond(HttpStatusCode.Forbidden)
             }
-
         }
     }
 }
