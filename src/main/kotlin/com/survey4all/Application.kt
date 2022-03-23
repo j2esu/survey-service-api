@@ -7,8 +7,9 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun main() {
+    val repo = Repo()
     embeddedServer(Netty, port = 8080, host = "localhost") {
-        configureRouting()
+        configureRouting(repo)
         configureSerialization()
         configureSecurity()
     }.start(wait = true)

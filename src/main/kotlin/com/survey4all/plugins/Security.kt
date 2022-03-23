@@ -1,6 +1,6 @@
 package com.survey4all.plugins
 
-import io.ktor.server.application.*
+import io.ktor.application.*
 
 fun Application.configureSecurity() {
 
