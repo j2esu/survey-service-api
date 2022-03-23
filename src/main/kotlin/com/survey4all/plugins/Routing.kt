@@ -1,9 +1,6 @@
 package com.survey4all.plugins
 
-import com.survey4all.AuthRequest
-import com.survey4all.AuthResponse
-import com.survey4all.Repo
-import com.survey4all.SignUpRequest
+import com.survey4all.*
 import com.survey4all.plugins.Route.*
 import io.ktor.application.*
 import io.ktor.features.*
@@ -24,18 +21,24 @@ fun Application.configureRouting(repo: Repo) {
 
         post(SignUp.path) {
             val request = call.receive<SignUpRequest>()
-            val token = repo.addUser(request.data, request.password)
-            call.respond(AuthResponse(token))
+            val user = repo.addUser(request.data, request.password)
+            call.respond(AuthResponse(user.token))
         }
 
         post(SignIn.path) {
             val request = call.receive<AuthRequest>()
-            val token = repo.getToken(request.email, request.password)
+            val token = repo.updateToken(request.email, request.password)
             call.respond(AuthResponse(token))
         }
 
         get(Profile.path) {
             call.respond(currentUser.data)
+        }
+
+        put(Profile.path) {
+            val request = call.receive<EditProfileRequest>()
+            val updatedUser = repo.editProfile(currentUser, request.name, request.age, request.sex, request.countryCode)
+            call.respond(updatedUser.data)
         }
 
         install(StatusPages) {

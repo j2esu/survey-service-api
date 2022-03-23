@@ -12,6 +12,7 @@ enum class Sex { Male, Female }
 
 data class User(
     val id: String,
+    val token: String,
     val data: UserData,
     val secret: String
 )
