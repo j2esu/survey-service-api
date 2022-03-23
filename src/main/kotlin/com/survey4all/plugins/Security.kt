@@ -1,8 +1,31 @@
 package com.survey4all.plugins
 
+import com.survey4all.Repo
+import com.survey4all.User
 import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.util.*
+import io.ktor.util.pipeline.*
 
-fun Application.configureSecurity() {
+private val userKey = AttributeKey<User>("user")
 
-
+fun Application.configureSecurity(repo: Repo) {
+    intercept(ApplicationCallPipeline.Call) {
+        val path = call.request.path()
+        val route = Route.values().first { it.path == path }
+        if (route.auth) {
+            val token = call.request.queryParameters["token"]
+            val user = token?.let { repo.getUser(it) }
+            if (user == null) {
+                call.respond(HttpStatusCode.Unauthorized, "No or invalid token")
+            } else {
+                call.attributes.put(userKey, user)
+            }
+        }
+    }
 }
+
+val PipelineContext<Unit, ApplicationCall>.currentUser: User
+    get() = call.attributes.getOrNull(userKey) ?: error("No user")

@@ -22,12 +22,16 @@ class Repo {
         return token
     }
 
-    fun updateToken(email: String, password: String): String {
+    fun getToken(email: String, password: String): String {
         val user = users.find { it.data.email == email }
         if (user?.secret == secret(email, password)) {
             return updateToken(user)
         }
         error("Invalid email or password")
+    }
+
+    fun getUser(token: String): User? {
+        return tokens.toList().find { it.second == token }?.first
     }
 }
 
