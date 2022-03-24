@@ -32,3 +32,9 @@ data class VoteRequest(
     val surveyId: String,
     val vote: Vote
 )
+
+@Serializable
+data class EditSurveyRequest(
+    val title: String? = null,
+    val desc: String? = null
+)

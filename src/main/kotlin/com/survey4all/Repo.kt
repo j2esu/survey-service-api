@@ -98,6 +98,16 @@ class Repo {
         return updateSurvey(newSurvey)
     }
 
+    fun updateSurvey(user: User, surveyId: String, title: String?, desc: String?): Survey? {
+        val survey = getSurvey(surveyId) ?: return null
+        require(user.id == survey.ownerId) { "User is not an owner" }
+        val newData = SurveyData(
+            title ?: survey.data.title,
+            desc ?: survey.data.desc
+        )
+        return updateSurvey(survey.copy(data = newData))
+    }
+
     private fun updateUser(user: User): User {
         users.removeIf { it.id == user.id }
         users.add(user)

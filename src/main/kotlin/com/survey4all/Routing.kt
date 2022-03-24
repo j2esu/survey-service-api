@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.*
 
 enum class Route(val path: String, val auth: Boolean = true) {
     SignIn("/signin", false),
@@ -62,13 +63,21 @@ fun Application.configureRouting(repo: Repo) = routing {
     }
 
     get(SurveyById.path) {
-        val id = call.parameters["id"]
-        val survey = id?.let { repo.getSurvey(it) }
+        val id = call.parameters.getOrFail("id")
+        val survey = repo.getSurvey(id)
         if (survey == null) {
             call.respond(HttpStatusCode.NotFound, "Survey not found")
         } else {
             call.respond(survey)
         }
+    }
+
+    put(SurveyById.path) {
+        val request = call.receive<EditSurveyRequest>()
+        val id = call.parameters.getOrFail("id")
+        val updatedSurvey = repo.updateSurvey(currentUser, id, request.title, request.desc)
+        requireNotNull(updatedSurvey) { "Survey not found" }
+        call.respond(updatedSurvey)
     }
 
     post(Voting.path) {
