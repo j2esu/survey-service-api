@@ -1,5 +1,6 @@
 package com.survey4all
 
+import com.survey4all.models.*
 import java.util.*
 
 class Repo {

@@ -1,4 +1,4 @@
-package com.survey4all
+package com.survey4all.models
 
 import kotlinx.serialization.Serializable
 

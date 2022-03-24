@@ -1,7 +1,6 @@
-package com.survey4all.plugins
+package com.survey4all
 
-import com.survey4all.Repo
-import com.survey4all.User
+import com.survey4all.models.User
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -11,7 +10,7 @@ import io.ktor.util.pipeline.*
 
 private val userKey = AttributeKey<User>("user")
 
-fun Application.configureSecurity(repo: Repo) {
+fun Application.configureAuth(repo: Repo) {
     intercept(ApplicationCallPipeline.Call) {
         val path = call.request.path()
         val route = Route.values().first { it.path == path }
