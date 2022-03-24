@@ -27,7 +27,7 @@ class Repo {
         return users.find { it.token == token }
     }
 
-    fun editProfile(
+    fun updateUser(
         user: User,
         name: String? = null,
         age: Int? = null,
@@ -53,7 +53,7 @@ class Repo {
     }
 
     fun getSurveys(count: Int, startAfter: String?): List<Survey> {
-        return if (startAfter == null || surveys.none { it.id == startAfter }) {
+        return if (startAfter == null) {
             surveys.reversed().take(count)
         } else {
             surveys.reversed().dropWhile { it.id != startAfter }.drop(1).take(count)

@@ -36,21 +36,21 @@ fun Application.configureRouting(repo: Repo) = routing {
 
     put(Profile.path) {
         val request = call.receive<EditProfileRequest>()
-        val updatedUser = repo.editProfile(currentUser, request.name, request.age, request.sex, request.countryCode)
+        val updatedUser = repo.updateUser(currentUser, request.name, request.age, request.sex, request.countryCode)
         call.respond(updatedUser.data)
     }
 
     post(Surveys.path) {
         val request = call.receive<CreateSurveyRequest>()
         val survey = repo.addSurvey(currentUser, request.data)
-        call.respond(survey.toResponse())
+        call.respond(survey)
     }
 
     get(Surveys.path) {
         val startAfter = call.request.queryParameters["startAfter"]
         val count = call.request.queryParameters["count"]?.toIntOrNull()
         val surveys = repo.getSurveys(count ?: 50, startAfter)
-        call.respond(surveys.map { it.toResponse() })
+        call.respond(surveys)
     }
 
     install(StatusPages) {
@@ -59,5 +59,3 @@ fun Application.configureRouting(repo: Repo) = routing {
         }
     }
 }
-
-private fun Survey.toResponse() = SurveyResponse(id, data, upvotes.size, downvotes.size)
