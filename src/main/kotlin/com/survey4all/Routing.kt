@@ -21,13 +21,16 @@ fun Application.configureRouting(repo: Repo) = routing {
     post(SignUp.path) {
         val request = call.receive<SignUpRequest>()
         val user = repo.addUser(request.data, request.password)
-        call.respond(AuthResponse(user.token))
+        val surveys = repo.getUserSurveys(user)
+        call.respond(AuthResponse(user.token, user.data, user.votes, surveys))
     }
 
     post(SignIn.path) {
         val request = call.receive<AuthRequest>()
         val token = repo.updateToken(request.email, request.password)
-        call.respond(AuthResponse(token))
+        val user = requireNotNull(repo.getUser(token)) { "Auth internal error" }
+        val surveys = repo.getUserSurveys(user)
+        call.respond(AuthResponse(token, user.data, user.votes, surveys))
     }
 
     get(Profile.path) {

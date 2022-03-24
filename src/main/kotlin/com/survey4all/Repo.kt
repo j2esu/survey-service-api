@@ -61,7 +61,7 @@ class Repo {
 
     fun addSurvey(user: User, data: SurveyData): Survey {
         val id = System.nanoTime().toString()
-        val survey = Survey(id, user.id, data, emptyList(), emptyList())
+        val survey = Survey(id, user.id, data)
         surveys.add(survey)
         return survey
     }
@@ -72,6 +72,10 @@ class Repo {
         } else {
             surveys.reversed().dropWhile { it.id != startAfter }.drop(1).take(count)
         }
+    }
+
+    fun getUserSurveys(user: User): List<Survey> {
+        return surveys.filter { it.ownerId == user.id }
     }
 
     private fun updateUser(user: User): User {

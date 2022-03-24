@@ -4,13 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AuthResponse(
-    val token: String
-)
-
-@Serializable
-data class SurveyResponse(
-    val id: String,
-    val data: SurveyData,
-    val yes: Int,
-    val no: Int
+    val token: String,
+    val userData: UserData,
+    val userVotesData: UserVotesData,
+    val userSurveys: List<Survey>
 )
