@@ -14,8 +14,9 @@ enum class Route(val path: String, val auth: Boolean = true) {
     SignIn("/signin", false),
     SignUp("/signup", false),
     Profile("/profile"),
+    Feed("/feed"),
     Surveys("/surveys"),
-    SurveyById("/surveys/{id}"),
+    SurveyById("/survey/{id}"),
     Voting("/vote")
 }
 
@@ -49,17 +50,21 @@ fun Application.configureRouting(repo: Repo) = routing {
         call.respond(updatedUser.data)
     }
 
-    post(Surveys.path) {
-        val request = call.receive<CreateSurveyRequest>()
-        val survey = repo.addSurvey(currentUser, request.data)
-        call.respond(survey)
-    }
-
-    get(Surveys.path) {
+    get(Feed.path) {
         val startAfter = call.request.queryParameters["startAfter"]
         val count = call.request.queryParameters["count"]?.toIntOrNull()
-        val surveys = repo.getSurveys(count ?: 50, startAfter)
-        call.respond(surveys)
+        val surveys = repo.getFeed(currentUser, count ?: 50, startAfter)
+        if (surveys == null) {
+            call.respond(HttpStatusCode.NotFound, "Survey not found")
+        } else {
+            call.respond(surveys)
+        }
+    }
+
+    post(Surveys.path) {
+        val request = call.receive<CreateSurveyRequest>()
+        val survey = repo.addSurvey(currentUser, request)
+        call.respond(survey)
     }
 
     get(SurveyById.path) {

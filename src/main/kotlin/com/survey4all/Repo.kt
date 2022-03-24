@@ -66,11 +66,12 @@ class Repo {
         return survey
     }
 
-    fun getSurveys(count: Int, startAfter: String?): List<Survey> {
-        return if (startAfter == null) {
-            surveys.reversed().take(count)
-        } else {
-            surveys.reversed().dropWhile { it.id != startAfter }.drop(1).take(count)
+    fun getFeed(user: User, count: Int, startAfter: String?): List<Survey>? {
+        val userSurveys = surveys.reversed().filterNot { it.ownerId == user.id }
+        return when {
+            startAfter == null -> userSurveys.take(count)
+            userSurveys.none { it.id == startAfter } -> null
+            else -> userSurveys.dropWhile { it.id != startAfter }.drop(1).take(count)
         }
     }
 

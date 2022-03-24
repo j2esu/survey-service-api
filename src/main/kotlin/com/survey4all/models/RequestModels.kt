@@ -22,10 +22,7 @@ data class EditProfileRequest(
     val countryCode: String? = null
 )
 
-@Serializable
-data class CreateSurveyRequest(
-    val data: SurveyData
-)
+typealias CreateSurveyRequest = SurveyData
 
 @Serializable
 data class VoteRequest(
