@@ -4,8 +4,16 @@ import kotlinx.serialization.Serializable
 
 data class Survey(
     val id: String,
-    val text: String,
-    val answers: List<String>
+    val ownerId: String,
+    val data: SurveyData,
+    val upvotes: List<String>,
+    val downvotes: List<String>
+)
+
+@Serializable
+data class SurveyData(
+    val title: String,
+    val desc: String
 )
 
 enum class Sex { Male, Female }

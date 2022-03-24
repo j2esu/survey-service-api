@@ -21,3 +21,8 @@ data class EditProfileRequest(
     val sex: Sex? = null,
     val countryCode: String? = null
 )
+
+@Serializable
+data class CreateSurveyRequest(
+    val data: SurveyData
+)

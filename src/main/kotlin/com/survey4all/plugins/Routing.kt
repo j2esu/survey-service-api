@@ -12,7 +12,8 @@ import io.ktor.routing.*
 enum class Route(val path: String, val auth: Boolean = true) {
     SignIn("/signin", false),
     SignUp("/signup", false),
-    Profile("/profile")
+    Profile("/profile"),
+    Surveys("/surveys")
 }
 
 fun Application.configureRouting(repo: Repo) {
@@ -41,6 +42,19 @@ fun Application.configureRouting(repo: Repo) {
             call.respond(updatedUser.data)
         }
 
+        post(Surveys.path) {
+            val request = call.receive<CreateSurveyRequest>()
+            val survey = repo.addSurvey(currentUser, request.data)
+            call.respond(survey.toResponse())
+        }
+
+        get(Surveys.path) {
+            val startAfter = call.request.queryParameters["startAfter"]
+            val count = call.request.queryParameters["count"]?.toIntOrNull()
+            val surveys = repo.getSurveys(count ?: 50, startAfter)
+            call.respond(surveys.map { it.toResponse() })
+        }
+
         install(StatusPages) {
             exception<Exception> { cause ->
                 call.respond(HttpStatusCode.InternalServerError, cause.message.toString())
@@ -48,3 +62,5 @@ fun Application.configureRouting(repo: Repo) {
         }
     }
 }
+
+fun Survey.toResponse() = SurveyResponse(id, data, upvotes.size, downvotes.size)

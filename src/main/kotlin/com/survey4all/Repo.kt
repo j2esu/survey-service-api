@@ -5,6 +5,7 @@ import java.util.*
 class Repo {
 
     private val users = mutableSetOf<User>()
+    private val surveys = mutableListOf<Survey>()
 
     fun addUser(data: UserData, password: String): User {
         require(users.none { it.data.email == data.email }) { "User already exists" }
@@ -41,6 +42,21 @@ class Repo {
             )
         )
         return updateUser(newUser)
+    }
+
+    fun addSurvey(user: User, data: SurveyData): Survey {
+        val id = System.nanoTime().toString()
+        val survey = Survey(id, user.id, data, emptyList(), emptyList())
+        surveys.add(survey)
+        return survey
+    }
+
+    fun getSurveys(count: Int, startAfter: String?): List<Survey> {
+        return if (startAfter == null || surveys.none { it.id == startAfter }) {
+            surveys.reversed().take(count)
+        } else {
+            surveys.reversed().dropWhile { it.id != startAfter }.drop(1).take(count)
+        }
     }
 
     private fun updateUser(user: User): User {
