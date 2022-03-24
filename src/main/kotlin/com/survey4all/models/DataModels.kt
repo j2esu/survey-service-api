@@ -25,7 +25,7 @@ data class User(
     val id: String,
     val token: String,
     val data: UserData,
-    val secret: String
+    val password: String
 )
 
 @Serializable

@@ -5,33 +5,19 @@ import java.util.*
 
 class Repo {
 
-    private val users = mutableSetOf(
-        User(
-            "0",
-            "token_for_admin",
-            UserData(
-                "Admin",
-                "admin@surveys.com",
-                30,
-                Sex.Male,
-                "ru"
-            ),
-            secret("admin@surveys.com", "password")
-        )
-    )
-
-    private val surveys = mutableListOf<Survey>()
+    private val users = mutableSetOf(*defaultUsers())
+    private val surveys = mutableListOf(*defaultSurveys())
 
     fun addUser(data: UserData, password: String): User {
         require(users.none { it.data.email == data.email }) { "User already exists" }
-        val user = User(users.size.toString(), token(), data, secret(data.email, password))
+        val user = User(users.size.toString(), token(), data, password)
         users.add(user)
         return user
     }
 
     fun updateToken(email: String, password: String): String {
         val user = users.find { it.data.email == email }
-        if (user?.secret == secret(email, password)) {
+        if (user?.password == password) {
             return updateUser(user.copy(token = token())).token
         }
         error("Invalid email or password")
@@ -128,4 +114,3 @@ class Repo {
 }
 
 private fun token() = UUID.randomUUID().toString()
-private fun secret(email: String, password: String) = email + password
