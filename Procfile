@@ -1,1 +1,1 @@
-web: ./build/install/survey4all/bin/survey4all
+web: ./build/install/com.survey4all.rest/bin/com.survey4all.rest
