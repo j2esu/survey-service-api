@@ -5,12 +5,26 @@ import java.util.*
 
 class Repo {
 
-    private val users = mutableSetOf<User>()
+    private val users = mutableSetOf(
+        User(
+            "0",
+            "token_for_admin",
+            UserData(
+                "Admin",
+                "admin@surveys.com",
+                30,
+                Sex.Male,
+                "ru"
+            ),
+            secret("admin@surveys.com", "password")
+        )
+    )
+
     private val surveys = mutableListOf<Survey>()
 
     fun addUser(data: UserData, password: String): User {
         require(users.none { it.data.email == data.email }) { "User already exists" }
-        val user = User("id_${users.size}", token(), data, secret(data.email, password))
+        val user = User(users.size.toString(), token(), data, secret(data.email, password))
         users.add(user)
         return user
     }

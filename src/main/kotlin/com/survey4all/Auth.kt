@@ -15,7 +15,7 @@ fun Application.configureAuth(repo: Repo) {
         val path = call.request.path()
         val route = Route.values().first { it.path == path }
         if (route.auth) {
-            val token = call.request.queryParameters["token"]
+            val token = call.request.authorization()?.removePrefix("Bearer")?.trim()
             val user = token?.let { repo.getUser(it) }
             if (user == null) {
                 call.respond(HttpStatusCode.Unauthorized, "No or invalid token")
