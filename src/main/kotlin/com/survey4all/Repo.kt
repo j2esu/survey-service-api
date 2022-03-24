@@ -82,10 +82,37 @@ class Repo {
         return surveys.filter { it.ownerId == user.id }
     }
 
+    fun getUserVotes(user: User): UserVotesData {
+        val up = surveys.filter { it.upVotes.contains(user.id) }.map { it.id }
+        val down = surveys.filter { it.downVotes.contains(user.id) }.map { it.id }
+        return UserVotesData(up, down)
+    }
+
+    fun vote(user: User, surveyId: String, vote: Vote): Survey? {
+        val survey = getSurvey(surveyId) ?: return null
+        val newSurvey = when (vote) {
+            Vote.Up -> survey.copy(upVotes = survey.upVotes + user.id, downVotes = survey.downVotes - user.id)
+            Vote.Down -> survey.copy(upVotes = survey.upVotes - user.id, downVotes = survey.downVotes + user.id)
+            Vote.None -> survey.copy(upVotes = survey.upVotes - user.id, downVotes = survey.downVotes - user.id)
+        }
+        return updateSurvey(newSurvey)
+    }
+
     private fun updateUser(user: User): User {
         users.removeIf { it.id == user.id }
         users.add(user)
         return user
+    }
+
+    private fun updateSurvey(survey: Survey): Survey? {
+        val index = surveys.indexOfFirst { it.id == survey.id }
+        return if (index != -1) {
+            surveys.removeAt(index)
+            surveys.add(index, survey)
+            return survey
+        } else {
+            null
+        }
     }
 }
 

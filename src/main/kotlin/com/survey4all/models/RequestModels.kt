@@ -26,3 +26,9 @@ data class EditProfileRequest(
 data class CreateSurveyRequest(
     val data: SurveyData
 )
+
+@Serializable
+data class VoteRequest(
+    val surveyId: String,
+    val vote: Vote
+)

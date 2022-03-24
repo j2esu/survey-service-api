@@ -7,8 +7,8 @@ data class Survey(
     val id: String,
     val ownerId: String,
     val data: SurveyData,
-    val upVotes: List<String> = emptyList(),
-    val downVotes: List<String> = emptyList()
+    val upVotes: Set<String> = emptySet(),
+    val downVotes: Set<String> = emptySet()
 )
 
 @Serializable
@@ -19,12 +19,13 @@ data class SurveyData(
 
 enum class Sex { Male, Female }
 
+enum class Vote { Up, Down, None }
+
 data class User(
     val id: String,
     val token: String,
     val data: UserData,
-    val secret: String,
-    val votes: UserVotesData = UserVotesData()
+    val secret: String
 )
 
 @Serializable

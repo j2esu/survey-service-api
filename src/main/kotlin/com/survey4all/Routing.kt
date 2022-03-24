@@ -14,7 +14,8 @@ enum class Route(val path: String, val auth: Boolean = true) {
     SignUp("/signup", false),
     Profile("/profile"),
     Surveys("/surveys"),
-    SurveyById("/surveys/{id}")
+    SurveyById("/surveys/{id}"),
+    Voting("/vote")
 }
 
 fun Application.configureRouting(repo: Repo) = routing {
@@ -23,7 +24,7 @@ fun Application.configureRouting(repo: Repo) = routing {
         val request = call.receive<SignUpRequest>()
         val user = repo.addUser(request.data, request.password)
         val surveys = repo.getUserSurveys(user)
-        call.respond(AuthResponse(user.token, user.data, user.votes, surveys))
+        call.respond(AuthResponse(user.token, user.data, UserVotesData(), surveys))
     }
 
     post(SignIn.path) {
@@ -31,7 +32,8 @@ fun Application.configureRouting(repo: Repo) = routing {
         val token = repo.updateToken(request.email, request.password)
         val user = requireNotNull(repo.getUser(token)) { "Auth internal error" }
         val surveys = repo.getUserSurveys(user)
-        call.respond(AuthResponse(token, user.data, user.votes, surveys))
+        val votes = repo.getUserVotes(user)
+        call.respond(AuthResponse(token, user.data, votes, surveys))
     }
 
     get(Profile.path) {
@@ -60,6 +62,16 @@ fun Application.configureRouting(repo: Repo) = routing {
     get(SurveyById.path) {
         val id = call.parameters["id"]
         val survey = id?.let { repo.getSurvey(it) }
+        if (survey == null) {
+            call.respond(HttpStatusCode.NotFound, "Survey not found")
+        } else {
+            call.respond(survey)
+        }
+    }
+
+    post(Voting.path) {
+        val request = call.receive<VoteRequest>()
+        val survey = repo.vote(currentUser, request.surveyId, request.vote)
         if (survey == null) {
             call.respond(HttpStatusCode.NotFound, "Survey not found")
         } else {
