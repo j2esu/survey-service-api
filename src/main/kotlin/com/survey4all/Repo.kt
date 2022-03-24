@@ -74,6 +74,10 @@ class Repo {
         }
     }
 
+    fun getSurvey(id: String): Survey? {
+        return surveys.find { it.id == id }
+    }
+
     fun getUserSurveys(user: User): List<Survey> {
         return surveys.filter { it.ownerId == user.id }
     }

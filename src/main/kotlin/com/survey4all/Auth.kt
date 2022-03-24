@@ -13,8 +13,8 @@ private val userKey = AttributeKey<User>("user")
 fun Application.configureAuth(repo: Repo) {
     intercept(ApplicationCallPipeline.Call) {
         val path = call.request.path()
-        val route = Route.values().first { it.path == path }
-        if (route.auth) {
+        val needAuth = Route.values().filter { !it.auth }.none { it.path == path }
+        if (needAuth) {
             val token = call.request.authorization()?.removePrefix("Bearer")?.trim()
             val user = token?.let { repo.getUser(it) }
             if (user == null) {

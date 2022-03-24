@@ -13,7 +13,8 @@ enum class Route(val path: String, val auth: Boolean = true) {
     SignIn("/signin", false),
     SignUp("/signup", false),
     Profile("/profile"),
-    Surveys("/surveys")
+    Surveys("/surveys"),
+    SurveyById("/surveys/{id}")
 }
 
 fun Application.configureRouting(repo: Repo) = routing {
@@ -54,6 +55,16 @@ fun Application.configureRouting(repo: Repo) = routing {
         val count = call.request.queryParameters["count"]?.toIntOrNull()
         val surveys = repo.getSurveys(count ?: 50, startAfter)
         call.respond(surveys)
+    }
+
+    get(SurveyById.path) {
+        val id = call.parameters["id"]
+        val survey = id?.let { repo.getSurvey(it) }
+        if (survey == null) {
+            call.respond(HttpStatusCode.NotFound, "Survey not found")
+        } else {
+            call.respond(survey)
+        }
     }
 
     install(StatusPages) {
