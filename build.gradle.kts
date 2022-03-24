@@ -6,6 +6,7 @@ plugins {
     application
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
+    id("application")
 }
 
 group = "com.survey4all"
@@ -28,4 +29,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+}
+
+tasks.create("stage") {
+    dependsOn("installDist")
 }

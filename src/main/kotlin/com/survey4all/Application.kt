@@ -8,7 +8,7 @@ import io.ktor.server.netty.*
 
 fun main() {
     val repo = Repo()
-    embeddedServer(Netty, port = 8080, host = "localhost") {
+    embeddedServer(Netty, port = System.getenv("PORT").toInt()) {
         configureAuth(repo)
         configureRouting(repo)
         install(ContentNegotiation) {
