@@ -85,6 +85,16 @@ fun Application.configureRouting(repo: Repo) = routing {
         call.respond(updatedSurvey)
     }
 
+    delete(SurveyById.path) {
+        val id = call.parameters.getOrFail("id")
+        val removed = repo.deleteSurvey(currentUser, id)
+        if (removed) {
+            call.respondText(status = HttpStatusCode.OK, text = "Removed")
+        } else {
+            call.respondText(status = HttpStatusCode.NotFound, text = "Survey doesn't exist")
+        }
+    }
+
     post(Voting.path) {
         val request = call.receive<VoteRequest>()
         val survey = repo.vote(currentUser, request.surveyId, request.vote)
